@@ -5,7 +5,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
 
 void main() {
-  runApp(const MapSample());
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: MapSample(),
+  ));
 }
 
 class MapSample extends StatefulWidget {
@@ -113,37 +116,102 @@ class MapSampleState extends State<MapSample> {
     }
   }
 
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                Text(
+                  'Where would you prefer to travel today?',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    icon: Icon(Icons.add_location_outlined),
+                    labelText: 'Origin',
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    icon: Icon(Icons.add_location_rounded),
+                    labelText: 'Destination',
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.route),
+                  label: Text('Search Route'),
+                  onPressed: () {
+                    // Add your route search logic here
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(255, 165, 0, 1),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Stack(
-          children: [
-            GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
-              zoomControlsEnabled: false,
-              markers: _markers,
-            ),
-            Positioned(
-              top: 38.0,
-              left: 16.0,
-              right: 16.0,
-              child: SearchBar(onSearch: _searchPlaces),
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: _goToTheUserLocation,
-          label: const Text('Go to My Location'),
-          icon: const Icon(Icons.location_on),
-        ),
-      ),
-    );
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Stack(
+            children: [
+              GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
+                zoomControlsEnabled: false,
+                markers: _markers,
+              ),
+              Positioned(
+                top: 44.0,
+                left: 16.0,
+                right: 16.0,
+                child: SearchBar(onSearch: _searchPlaces),
+              ),
+            ],
+          ),
+          floatingActionButton: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 35.0),
+              FloatingActionButton.extended(
+                onPressed: _showBottomSheet,
+                label: const Text('Select Route'),
+                backgroundColor: Color.fromRGBO(255, 165, 0, 1),
+                icon: const Icon(Icons.route),
+              ),
+              SizedBox(width: 20.0),
+              FloatingActionButton.extended(
+                onPressed: _goToTheUserLocation,
+                label: const Text('My Location'),
+                backgroundColor: Color.fromRGBO(255, 165, 0, 1),
+                icon: const Icon(Icons.location_on),
+              ),
+            ],
+          ),
+        ));
   }
 }
 
